@@ -21,13 +21,7 @@ const LoginForm = () => {
       localStorage.setItem('userImage', response.data.userImage);
       localStorage.setItem('role', response.data.role);
       localStorage.setItem('email', response.data.email);
-      console.log(response.data.token);
-      console.log(response.data.id);
-      console.log(username);
-      console.log(response.data.userImage);
-      console.log(response.data.role);
-      console.log(response.data.email);
-      
+
       if (response.data.role === 'admin') {
         navigate('/adminhome'); // Redirect admin to adminhome
       } else {
@@ -64,11 +58,11 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
+    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-blue-500 to-gray-300">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
         {!isForgotPassword ? (
           <>
-            <h2 className="text-2xl font-bold mb-6">Login</h2>
+            <h2 className="text-3xl font-bold mb-6">Login</h2>
             <form onSubmit={handleLoginSubmit}>
               <input
                 type="text"
@@ -76,7 +70,7 @@ const LoginForm = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="mb-4 p-2 w-full border rounded"
+                className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="password"
@@ -84,18 +78,18 @@ const LoginForm = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="mb-4 p-2 w-full border rounded"
+                className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+                className="w-full bg-blue-500 text-white py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
               >
                 Login
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/signup')}
-                className="w-full mt-2 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition-colors"
+                className="w-full mt-2 bg-gray-500 text-white py-3 rounded-lg shadow-md hover:bg-gray-600 transition-colors"
               >
                 Don't have an Account?
               </button>
@@ -110,34 +104,30 @@ const LoginForm = () => {
           </>
         ) : (
           <>
-            <h2 className="text-2xl font-bold mb-6">{isOtpSent ? 'Verify OTP' : 'Forgot Password'}</h2>
+            <h2 className="text-3xl font-bold mb-6">{isOtpSent ? 'Verify OTP' : 'Forgot Password'}</h2>
             <form onSubmit={isOtpSent ? handleVerifyOtpSubmit : handleForgotPasswordSubmit}>
               {isOtpSent ? (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Enter OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    required
-                    className="mb-4 p-2 w-full border rounded"
-                  />
-                </>
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                  className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               ) : (
-                <>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="mb-4 p-2 w-full border rounded"
-                  />
-                </>
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               )}
               <button
                 type="submit"
-                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+                className="w-full bg-blue-500 text-white py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
               >
                 {isOtpSent ? 'Verify OTP' : 'Send OTP'}
               </button>
@@ -147,7 +137,7 @@ const LoginForm = () => {
                   setIsForgotPassword(false);
                   setIsOtpSent(false);
                 }}
-                className="w-full mt-2 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition-colors"
+                className="w-full mt-2 bg-gray-500 text-white py-3 rounded-lg shadow-md hover:bg-gray-600 transition-colors"
               >
                 {isOtpSent ? 'Back to Forgot Password' : 'Back to Login'}
               </button>
@@ -160,3 +150,4 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+

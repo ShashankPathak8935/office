@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link,useNavigate } from 'react-router-dom';
 import { FaShoppingCart } from 'react-icons/fa';
 import axios from 'axios';
-import reactLogo from '../images/image2.png';
+import reactLogo from '../images/navbar1.png';
 
 const Navbar = ({ setFilteredProducts }) => {
   const [cartCount, setCartCount] = useState(0);
@@ -135,7 +135,7 @@ const Navbar = ({ setFilteredProducts }) => {
   
 
   return (
-    <nav className="bg-gray-800 p-4">
+    <nav className="bg-red-800 p-4">
       <div className="flex justify-between items-center">
         <div className="flex space-x-8">
         <img
@@ -195,7 +195,7 @@ const Navbar = ({ setFilteredProducts }) => {
               <span className="text-white">{username}</span>
               <button
                 onClick={handleLogout}
-                className="text-red-400 hover:text-red-700 transition-colors"
+                className="text-white-400 hover:text-white-700 transition-colors"
               >
                 Logout
               </button>

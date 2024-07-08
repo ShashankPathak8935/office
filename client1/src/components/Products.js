@@ -9,7 +9,6 @@ const Products = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [cartCount, setCartCount] = useState(0);
-  const [visibleProducts, setVisibleProducts] = useState(9); // Initial number of products to display
   const username = localStorage.getItem('username');
   const userId = localStorage.getItem('userId');
   const [averageRatings, setAverageRatings] = useState({}); // State for average ratings
@@ -20,7 +19,7 @@ const Products = () => {
       try {
         const response = await axios.get('http://localhost:5000/products');
         setProducts(response.data);
-        setFilteredProducts(response.data.slice(0, visibleProducts)); // Initially, display limited number of products
+        setFilteredProducts(response.data); // Display all products by default
         fetchAverageRatings(response.data); // Fetch average ratings for products
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -38,7 +37,7 @@ const Products = () => {
 
     fetchProducts();
     fetchCategories();
-  }, [visibleProducts]); // Fetch products whenever visibleProducts changes
+  }, []); // Fetch products once on component mount
 
   const fetchAverageRatings = async (products) => {
     try {
@@ -81,14 +80,6 @@ const Products = () => {
     }
   };
 
-  const loadMoreProducts = () => {
-    setVisibleProducts(prevVisible => prevVisible + 9); // Increase visible products count
-  };
-
-  const showLessProducts = () => {
-    setVisibleProducts(9); // Reset visible products count to initial value
-  };
-
   return (
     <>
       <Navbar setFilteredProducts={setFilteredProducts} cartCount={cartCount} setCartCount={setCartCount} />
@@ -100,67 +91,46 @@ const Products = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {filteredProducts.map(product => (
-            <div key={product.id} className="bg-white rounded-lg shadow-md p-6 w-full max-w-md transition duration-300 transform hover:scale-105">
-              <img
-                src={`http://localhost:5000/uploads/${product.photo}`}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-lg mb-4"
-              />
-              <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-              <p className="text-gray-600 mb-2">{product.description}</p>
-              <span className="text-gray-900 font-bold mb-2">${product.price}</span>
-              {isLoadingRatings ? (
-                <p>Loading...</p>
-              ) : (
-                <div className="flex items-center mt-2">
-                  <StarRating
-                    rating={averageRatings[product.id] ? averageRatings[product.id].averageRating : 0}
-                    disabled
-                  />
-                  <span className="ml-2 text-sm text-gray-500">
-                    ({averageRatings[product.id] ? averageRatings[product.id].averageRating.toFixed(1) : 0} avg)
-                  </span>
+            <div key={product.id} className="bg-white rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out">
+              <div className="relative">
+                <img
+                  src={`http://localhost:5000/uploads/${product.photo}`}
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                />
+                <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 text-xs rounded-full">
+                  {product.category}
                 </div>
-              )}
-              <div className="flex justify-between items-center mt-4">
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
+                <p className="text-gray-600 mb-4">{product.description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-900 font-bold text-xl">${product.price}</span>
+                  {isLoadingRatings ? (
+                    <p>Loading...</p>
+                  ) : (
+                    <div className="flex items-center">
+                      <StarRating
+                        rating={averageRatings[product.id] ? averageRatings[product.id].averageRating : 0}
+                        disabled
+                      />
+                      <span className="ml-2 text-sm text-gray-500">
+                        ({averageRatings[product.id] ? averageRatings[product.id].averageRating.toFixed(1) : 0} avg)
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={() => handleAddToCart(product.id)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-colors"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition-colors w-full"
                 >
                   Add to Cart
                 </button>
-                <span className="text-sm text-gray-500">{product.category}</span>
               </div>
             </div>
           ))}
         </div>
-        {visibleProducts < products.length ? (
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={loadMoreProducts}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md mr-2 hover:bg-blue-600 transition-colors"
-            >
-              Load More
-            </button>
-            <button
-              onClick={showLessProducts}
-              className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 transition-colors"
-            >
-              Show Less
-            </button>
-          </div>
-        ) : (
-          visibleProducts > 9 && (
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={showLessProducts}
-                className="bg-red-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-red-600 transition-colors"
-              >
-                Show Less
-              </button>
-            </div>
-          )
-        )}
       </div>
     </>
   );

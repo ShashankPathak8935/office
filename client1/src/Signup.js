@@ -35,8 +35,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
+    <div className="flex justify-center items-center h-screen bg-blue-400">
+      <div className="bg-white p-3 rounded shadow-md w-full max-w-md text-center">
         <h2 className="text-2xl font-bold mb-6">Signup</h2>
         {notification && (
           <div className="bg-green-200 text-green-800 p-2 mb-4 rounded">
