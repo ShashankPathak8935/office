@@ -50,51 +50,54 @@ const UserRequests = () => {
   return (
     <>
       <NavbarAdmin />
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th className="py-2 px-4 border-b">Username</th>
-              <th className="py-2 px-4 border-b">Email</th>
-              <th className="py-2 px-4 border-b">Full Name</th>
-              <th className="py-2 px-4 border-b">Role</th>
-              <th className="py-2 px-4 border-b">Image</th>
-              <th className="py-2 px-4 border-b">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingUsers.map(user => (
-              <tr key={user.id}>
-                <td className="py-2 px-4 border-b text-center">{user.username}</td>
-                <td className="py-2 px-4 border-b text-center">{user.email}</td>
-                <td className="py-2 px-4 border-b text-center">{user.full_name}</td>
-                <td className="py-2 px-4 border-b text-center">{user.role}</td>
-                <td className="py-2 px-4 border-b text-center">
-                  <div className="flex justify-center items-center">
-                    <img src={`http://localhost:5000/${user.image}`} alt={user.username} className="h-10 w-10 rounded-full object-cover" />
-                  </div>
-                </td>
-                <td className="py-2 px-4 border-b text-center">
-                  <button
-                    onClick={() => handleApprove(user.id)}
-                    className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition-colors mr-2"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(user.id)}
-                    className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition-colors"
-                  >
-                    Reject
-                  </button>
-                </td>
+      <div className="flex flex-col items-center mt-8">
+        <div className="overflow-x-auto w-full max-w-4xl">
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-red-800 text-white">
+              <tr>
+                <th className="py-2 px-4">Username</th>
+                <th className="py-2 px-4">Email</th>
+                <th className="py-2 px-4">Full Name</th>
+                <th className="py-2 px-4">Role</th>
+                <th className="py-2 px-4">Image</th>
+                <th className="py-2 px-4">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pendingUsers.map(user => (
+                <tr key={user.id} className="border-b hover:bg-yellow-500 transition-colors">
+                  <td className="py-2 px-4 text-center">{user.username}</td>
+                  <td className="py-2 px-4 text-center">{user.email}</td>
+                  <td className="py-2 px-4 text-center">{user.full_name}</td>
+                  <td className="py-2 px-4 text-center">{user.role}</td>
+                  <td className="py-2 px-4 text-center">
+                    <div className="flex justify-center items-center">
+                      <img src={`http://localhost:5000/${user.image}`} alt={user.username} className="h-10 w-10 rounded-full object-cover" />
+                    </div>
+                  </td>
+                  <td className="py-2 px-4 text-center">
+                    <button
+                      onClick={() => handleApprove(user.id)}
+                      className="bg-green-500 text-white py-1 px-3 rounded-full hover:bg-green-600 transition-colors mr-2"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => handleReject(user.id)}
+                      className="bg-red-500 text-white py-1 px-3 rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );
 };
 
 export default UserRequests;
+

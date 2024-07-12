@@ -80,14 +80,14 @@ const checkAdminRole = (req, res, next) => {
     });
 };
 
-// Example route that is protected by the admin role check middleware
+//route that is protected by the admin role check middleware
 app.get('/adminhome', checkAdminRole, (req, res) => {
   res.send('Welcome to the Admin Home Page');
 });
 
 
 
-// Other routes (signup, login, etc.) go here
+// this is signup and login routes
 app.post('/signup', async (req, res) => {
   upload(req, res, async (err) => {
     if (err) {
@@ -100,7 +100,7 @@ app.post('/signup', async (req, res) => {
     try {
       const existingUser = await pool.query('SELECT * FROM shashank_pathak.users WHERE email = $1', [email]);
       if (existingUser.rows.length > 0) {
-        return res.status(400).send({ message: 'Email already exists' });
+        return res.status(400).send({ message: 'this Email is  already exists' });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -130,7 +130,7 @@ app.post('/signup', async (req, res) => {
         `Hello ${fullName},<br><br>You have successfully registered with the following details:<br>${userHtmlTable} <br> Please wait for login till the admin approves you.`
       );
 
-      // Send email to the admin for approval
+      // this is a  email to the admin for approval 
       const adminEmail = 'shashankrajpathak123@gmail.com'; // Replace with the admin's email address
       await sendEmail(
         adminEmail,
@@ -149,7 +149,7 @@ app.post('/signup', async (req, res) => {
   });
 });
 
-// Fetch pending user registrations
+//  fetch pending  registrations of users 
 app.get('/pending-registrations', checkAdminRole, async (req, res) => {
   try {
     const pendingUsers = await pool.query('SELECT id, username, email, full_name, image, role FROM shashank_pathak.users WHERE approved = false');
@@ -211,6 +211,7 @@ app.post('/reject-user', checkAdminRole, async (req, res) => {
   }
 });
 
+// login route for user login
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -323,7 +324,7 @@ app.post('/forgot-password', async (req, res) => {
     }
 
     const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 15 * 60000); // OTP expires in 15 minutes
+    const expiresAt = new Date(Date.now() + 15 * 60000);
 
     await pool.query(
       'UPDATE shashank_pathak.users SET otp = $1, otp_expires_at = $2 WHERE email = $3',
@@ -450,20 +451,6 @@ app.get('/categories', async (req, res) => {
   }
 });
 
-
-
-
-// // Fetch all categories
-// app.get('/categories', async (req, res) => {
-//   try {
-//     const result = await pool.query('SELECT DISTINCT category FROM shashank_pathak.products');
-//     // console.log('Fetched categories:', result.rows);
-//     res.json(result.rows);
-//   } catch (err) {
-//     console.error('Error fetching categories:', err);
-//     res.status(500).json({ error: 'Internal Server Error' });
-//   }
-// });
 
 
 // Fetch products by category
@@ -740,7 +727,7 @@ app.post('/place-order/:userId', async (req, res) => {
     );
 
     // Send email to the admin
-    const adminEmail = 'thakurshashank_pathak8630@gmail.com'; // Replace with the admin's email address
+    const adminEmail = 'shashankrajpathak123@gmail.com'; // Replace with the admin's email address
       sendEmail(
       adminEmail,
       'New Order Placed',
@@ -770,8 +757,8 @@ app.post('/place-order/:userId', async (req, res) => {
 app.get('/pending-orders/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
-    const result = await pool.query(`
-      SELECT 
+    const result = await pool.query(
+      `SELECT 
         c.id AS order_id,
         c.product_id,
         c.quantity,
@@ -780,14 +767,17 @@ app.get('/pending-orders/:userId', async (req, res) => {
         p.price
       FROM shashank_pathak.cart c
       JOIN shashank_pathak.products p ON c.product_id = p.id
-      WHERE c.user_id = $1 AND c.delivered = false
-    `, [userId]);
+      WHERE c.user_id = $1 AND c.delivered = false`
+    , [userId]);
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching pending orders:', err);
     res.status(500).send('Server error');
   }
 });
+
+
+
 
 
 app.get('/pending-orders', async (req, res) => {
@@ -811,6 +801,70 @@ app.get('/pending-orders', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+app.get('/pending-orders', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        c.id,
+        c.user_id,
+        c.product_id,
+        c.quantity,
+        p.photo AS photo,
+        p.name,
+        p.price
+      FROM shashank_pathak.cart c
+      JOIN shashank_pathak.products p ON c.product_id = p.id
+      WHERE c.delivered = false
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching pending orders:', err);
+    res.status(500).send('Server error');
+  }
+});
+app.get('/pending-orders', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        c.id,
+        c.user_id,
+        c.product_id,
+        c.quantity,
+        p.photo AS photo,
+        p.name,
+        p.price
+      FROM shashank_pathak.cart c
+      JOIN shashank_pathak.products p ON c.product_id = p.id
+      WHERE c.delivered = false
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching pending orders:', err);
+    res.status(500).send('Server error');
+  }
+});
+app.get('/pending-orders', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        c.id,
+        c.user_id,
+        c.product_id,
+        c.quantity,
+        p.photo AS photo,
+        p.name,
+        p.price
+      FROM shashank_pathak.cart c
+      JOIN shashank_pathak.products p ON c.product_id = p.id
+      WHERE c.delivered = false
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching pending orders:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 
 
@@ -1146,7 +1200,9 @@ app.post('/submit-rating', async (req, res) => {
     const { rating: currentRating, rating_count: ratingCount } = productResult.rows[0];
 
     // Calculate new rating and increment count
+    console.log(currentRating,rating);
     const newRating = currentRating + rating;
+    console.log(newRating);
     const newRatingCount = ratingCount + 1;
 
     // Update product rating and rating count in the shashank_pathak.products table
@@ -1197,6 +1253,7 @@ app.get('/product-rating/:productId', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 
 

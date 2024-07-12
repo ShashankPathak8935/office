@@ -11,6 +11,8 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [image, setImage] = useState(null);
   const [notification, setNotification] = useState(null); // State for notification
+  const [notificationType, setNotificationType] = useState(''); // State for notification type
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -27,10 +29,16 @@ const Signup = () => {
       const response = await axios.post('http://localhost:5000/signup', formData);
       console.log(response.data);
       setNotification('Signup successful! Please check your email for further instructions.');
-      navigate('/login');
+      setNotificationType('success');
+      setIsModalOpen(true); // Open the modal on successful signup
+      setTimeout(() => {
+        setIsModalOpen(false);
+        navigate('/login');
+      }, 3000); // Close the modal and navigate to login after 3 seconds
     } catch (error) {
       console.error('Error:', error.response ? error.response.data.message : error.message);
       setNotification('Signup failed. Please try again.');
+      setNotificationType('error');
     }
   };
 
@@ -39,7 +47,11 @@ const Signup = () => {
       <div className="bg-white p-3 rounded shadow-md w-full max-w-md text-center">
         <h2 className="text-2xl font-bold mb-6">Signup</h2>
         {notification && (
-          <div className="bg-green-200 text-green-800 p-2 mb-4 rounded">
+          <div
+            className={`p-2 mb-4 rounded ${
+              notificationType === 'success' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'
+            }`}
+          >
             {notification}
           </div>
         )}
@@ -126,8 +138,24 @@ const Signup = () => {
           </button>
         </form>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">Signup Successful!</h2>
+            <p className="mb-4">Please check your email for further instructions.</p>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Signup;
+

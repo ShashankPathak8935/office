@@ -2,13 +2,24 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
 import StarRating from './StarRating'; // Import StarRating component
-import Body from './Body'
+import headerImage from '../images/contactus1.avif'; 
+
+const Notification = ({ message }) => {
+  if (!message) return null;
+
+  return (
+    <div className="fixed top-0 left-0 w-full bg-green-500 text-white text-center py-2 z-50">
+      {message}
+    </div>
+  );
+};
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [cartCount, setCartCount] = useState(0);
+  const [notification, setNotification] = useState(''); // State for notification message
   const username = localStorage.getItem('username');
   const userId = localStorage.getItem('userId');
   const [averageRatings, setAverageRatings] = useState({}); // State for average ratings
@@ -75,6 +86,8 @@ const Products = () => {
       });
       console.log('Product added to cart:', response.data);
       setCartCount(prevCount => prevCount + 1); // Increment cart count
+      setNotification('Item added to cart successfully!');
+      setTimeout(() => setNotification(''), 3000); // Clear notification after 3 seconds
     } catch (err) {
       console.error('Error adding product to cart:', err);
     }
@@ -82,13 +95,12 @@ const Products = () => {
 
   return (
     <>
+      <Notification message={notification} />
       <Navbar setFilteredProducts={setFilteredProducts} cartCount={cartCount} setCartCount={setCartCount} />
-      <Body/>
+      <div className="relative h-64 md:h-96 w-full overflow-hidden">
+        <img src={headerImage} alt="Header" className="w-full h-full object-cover" />
+      </div>
       <div className="flex flex-col items-center bg-gray-100 py-8 min-h-screen">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold">User Home Page</h2>
-          <p className="text-gray-700">Welcome, {username}!</p>
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {filteredProducts.map(product => (
             <div key={product.id} className="bg-white rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out">
@@ -115,9 +127,9 @@ const Products = () => {
                         rating={averageRatings[product.id] ? averageRatings[product.id].averageRating : 0}
                         disabled
                       />
-                      <span className="ml-2 text-sm text-gray-500">
+                      {/* <span className="ml-2 text-sm text-gray-500">
                         ({averageRatings[product.id] ? averageRatings[product.id].averageRating.toFixed(1) : 0} avg)
-                      </span>
+                      </span> */}
                     </div>
                   )}
                 </div>
@@ -137,3 +149,4 @@ const Products = () => {
 };
 
 export default Products;
+

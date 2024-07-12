@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Dashboard from './Dashboard'
+import Dashboard from './Dashboard';
 import NavbarAdmin from './NavbarAdmin';
 
 const CreateProductForm = () => {
@@ -46,7 +46,6 @@ const CreateProductForm = () => {
         }
       });
       navigate('/adminhome'); // Navigate to admin home page on success
-     
     } catch (err) {
       console.error('Error creating product:', err);
     }
@@ -54,11 +53,11 @@ const CreateProductForm = () => {
 
   return (
     <>
-      <Dashboard/>
-      <NavbarAdmin/>
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <Dashboard />
+      <NavbarAdmin />
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500 p-4">
         <form onSubmit={handleSubmit} className="w-full max-w-lg bg-white p-8 rounded shadow-md">
-          <h2 className="block text-gray-700 text-lg font-bold mb-6 text-center">Create New Product</h2>
+          <h2 className="block text-gray-800 text-2xl font-bold mb-6 text-center">Add More Products</h2>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
               Product Name
@@ -68,7 +67,7 @@ const CreateProductForm = () => {
               name="name"
               value={newProduct.name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -81,7 +80,7 @@ const CreateProductForm = () => {
               name="price"
               value={newProduct.price}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -93,7 +92,7 @@ const CreateProductForm = () => {
               type="file"
               name="photo"
               onChange={handleFileChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -105,7 +104,7 @@ const CreateProductForm = () => {
               name="description"
               value={newProduct.description}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
@@ -118,7 +117,7 @@ const CreateProductForm = () => {
               name="category"
               value={newProduct.category}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="Enter category"
               required
             />

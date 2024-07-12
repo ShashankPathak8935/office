@@ -1,16 +1,5 @@
 import React from 'react';
-import { BsChevronDown } from "react-icons/bs";
-import reactLogo from '../images/daslogo1.png'
-import { RiComputerLine } from "react-icons/ri";
-import { RiMastercardLine } from "react-icons/ri";
-import { BsCalendarEventFill } from "react-icons/bs";
-import { IoDocumentSharp } from "react-icons/io5";
-import { FaShoppingCart } from "react-icons/fa";
-import { IoDocumentsSharp } from "react-icons/io5";
-import { FaUserCircle } from "react-icons/fa";
-import { FaUpload } from "react-icons/fa";
-import { FaArrowUp } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
+import reactLogo from '../images/daslogo1.png';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -35,64 +24,52 @@ const Dashboard = () => {
 
       <ul className="p-2">
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/adminhome" className="block flex items-center">
-            <RiComputerLine className="mr-2" />
+          <Link to="/adminhome" className="block">
             Home
           </Link>
         </li>
-        {/* Add other Dashboard items here */}
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/create-product" className="block flex items-center">
-            <RiMastercardLine className="mr-2" />
-            Create New Product
+          <Link to="/create-product" className="block">
+            Add More Products
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/Ourproducts" className="block flex items-center">
-            <IoDocumentSharp className="mr-2" />
+          <Link to="/Ourproducts" className="block">
             Our Products
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/products" className="block flex items-center">
-            <BsCalendarEventFill className="mr-2" />
+          <Link to="/products" className="block">
             Update Product
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/order-request" className="block flex items-center">
-            <FaShoppingCart className="mr-2" />
+          <Link to="/order-request" className="block">
             Order Request
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/updateadmin-profile" className="block flex items-center">
-            <IoDocumentsSharp className="mr-2" />
+          <Link to="/updateadmin-profile" className="block">
             Update Profile
           </Link>
         </li>
-       
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/user-requests" className="block flex items-center">
-            <FaUpload className="mr-2" />
+          <Link to="/user-requests" className="block">
             New User Request
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/download-pdf" className="block flex items-center">
-            <FaArrowUp className="mr-2" />
+          <Link to="/download-pdf" className="block">
             Download Pdf
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <Link to="/user-message" className="block flex items-center">
-            <FaStar className="mr-2" />
+          <Link to="/user-message" className="block">
             User's Messages
           </Link>
         </li>
         <li className="py-2 px-4 hover:bg-gray-300">
-          <div className="block flex items-center cursor-pointer" onClick={handleLogout}>
-            <FaUserCircle className="mr-2" />
+          <div className="block cursor-pointer" onClick={handleLogout}>
             Logout
           </div>
         </li>

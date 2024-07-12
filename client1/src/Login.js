@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const Notification = ({ message, type, onClose }) => {
+  if (!message) return null;
+
+  return (
+    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 bg-${type}-500 text-white px-4 py-2 rounded shadow-lg`}>
+      <span>{message}</span>
+      <button className="ml-2 text-white" onClick={onClose}>x</button>
+    </div>
+  );
+};
+
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -9,13 +20,21 @@ const LoginForm = () => {
   const [otp, setOtp] = useState('');
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' });
   const navigate = useNavigate();
+
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification({ message: '', type: '' });
+    }, 3000);
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/login', { username, password });
-      localStorage.setItem('userId', response.data.id); // Save user ID in local storage
+      localStorage.setItem('userId', response.data.id);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', username);
       localStorage.setItem('userImage', response.data.userImage);
@@ -23,13 +42,13 @@ const LoginForm = () => {
       localStorage.setItem('email', response.data.email);
 
       if (response.data.role === 'admin') {
-        navigate('/adminhome'); // Redirect admin to adminhome
+        navigate('/adminhome');
       } else {
-        navigate('/home'); // Redirect normal user to home
+        navigate('/home');
       }
     } catch (error) {
       console.error(error.response.data.message);
-      alert(error.response.data.message); // Show error message
+      showNotification(error.response.data.message, 'red');
     }
   };
 
@@ -38,10 +57,10 @@ const LoginForm = () => {
     try {
       const response = await axios.post('http://localhost:5000/forgot-password', { email });
       setIsOtpSent(true);
-      alert(response.data.message); // Show success message
+      showNotification(response.data.message, 'green');
     } catch (error) {
       console.error(error.response.data.message);
-      alert(error.response.data.message); // Show error message
+      showNotification(error.response.data.message, 'red');
     }
   };
 
@@ -49,16 +68,17 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      alert(response.data.message); // Show success message or navigate to reset password page
-      navigate('/reset-password'); // Redirect to reset password page after successful OTP verification
+      showNotification(response.data.message, 'green');
+      navigate('/reset-password');
     } catch (error) {
       console.error(error.response.data.message);
-      alert(error.response.data.message); // Show error message
+      showNotification(error.response.data.message, 'red');
     }
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-blue-500 to-gray-300">
+      <Notification message={notification.message} type={notification.type} onClose={() => setNotification({ message: '', type: '' })} />
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-center">
         {!isForgotPassword ? (
           <>
@@ -150,4 +170,5 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+
 

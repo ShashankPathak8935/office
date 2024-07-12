@@ -18,20 +18,22 @@ const UserMessages = () => {
   }, []);
 
   return (
-    <div className="container mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4">User Messages</h2>
-      {messages.length > 0 ? (
-        messages.map((message, index) => (
-          <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden mb-6 p-4">
-            <p><strong>Name:</strong> {message.name}</p>
-            <p><strong>Email:</strong> {message.email}</p>
-            <p><strong>Food:</strong> {message.food}</p>
-            <p><strong>Message:</strong> {message.message}</p>
-          </div>
-        ))
-      ) : (
-        <p>No messages found.</p>
-      )}
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
+      <div className="w-full max-w-3xl p-6 bg-white rounded-lg shadow-xl">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">User Messages</h2>
+        {messages.length > 0 ? (
+          messages.map((message, index) => (
+            <div key={index} className="bg-gray-50 shadow-md rounded-lg overflow-hidden mb-6 p-6 hover:bg-gray-100 transition duration-300">
+              <p className="text-lg text-gray-800"><strong>Name:</strong> {message.name}</p>
+              <p className="text-lg text-gray-800"><strong>Email:</strong> {message.email}</p>
+              <p className="text-lg text-gray-800"><strong>Food:</strong> {message.food}</p>
+              <p className="text-lg text-gray-800"><strong>Message:</strong> {message.message}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No messages found.</p>
+        )}
+      </div>
     </div>
   );
 };

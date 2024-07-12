@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Dashboard from './Dashboard';
 import NavbarAdmin from './NavbarAdmin';
 
 const ProductsTable = () => {
@@ -64,21 +63,21 @@ const ProductsTable = () => {
       <div className="container mx-auto mt-8">
         <h2 className="text-2xl font-bold mb-4">Our Products</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
+          <table className="min-w-full bg-white border border-blue-500 bg-gradient-to-r from-gray-100 to-gray-200">
             <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border-b">ID</th>
-                <th className="py-2 px-4 border-b">Name</th>
-                <th className="py-2 px-4 border-b">Price</th>
-                <th className="py-2 px-4 border-b">Description</th>
-                <th className="py-2 px-4 border-b">Category</th>
-                <th className="py-2 px-4 border-b">Photo</th>
-                {/* <th className="py-2 px-4 border-b">Actions</th> */}
+              <tr className="bg-blue-500 text-white">
+                <th className="py-3 px-4 border-b">ID</th>
+                <th className="py-3 px-4 border-b">Name</th>
+                <th className="py-3 px-4 border-b">Price</th>
+                <th className="py-3 px-4 border-b">Description</th>
+                <th className="py-3 px-4 border-b">Category</th>
+                <th className="py-3 px-4 border-b">Photo</th>
+                {/* <th className="py-3 px-4 border-b">Actions</th> */}
               </tr>
             </thead>
             <tbody>
               {products.map(product => (
-                <tr key={product.id} className="text-center">
+                <tr key={product.id} className="text-center bg-gray hover:bg-red-500">
                   <td className="py-2 px-4 border-b">{product.id}</td>
                   <td className="py-2 px-4 border-b">{product.name}</td>
                   <td className="py-2 px-4 border-b">{product.price}</td>
@@ -95,20 +94,7 @@ const ProductsTable = () => {
                       <span className="text-red-500">Image not found</span>
                     )}
                   </td>
-                  {/* <td className="py-2 px-4 border-b flex justify-center space-x-2">
-                    <button
-                      onClick={() => handleUpdate(product.id)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex-1"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={() => handleDelete(product.id, product.photo)}
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex-1"
-                    >
-                      Delete
-                    </button>
-                  </td> */}
+                 
                 </tr>
               ))}
             </tbody>
@@ -120,3 +106,4 @@ const ProductsTable = () => {
 };
 
 export default ProductsTable;
+

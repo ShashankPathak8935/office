@@ -61,51 +61,55 @@ const UpdateProfile = () => {
 
   return (
     <>
-    <NavbarAdmin/>
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-6">Update Profile</h2>
-        <form onSubmit={handleSubmit}>
-          <input 
-            type="text" 
-            placeholder="Full Name" 
-            value={fullName} 
-            onChange={(e) => setFullName(e.target.value)} 
-            required 
-            className="mb-4 p-2 w-full border rounded"
-          />
-          <input 
-            type="email" 
-            placeholder="Email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            required 
-            className="mb-4 p-2 w-full border rounded"
-          />
-          <input 
-            type="text" 
-            placeholder="Username" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
-            required 
-            className="mb-4 p-2 w-full border rounded"
-          />
-          <input
-            type="file"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="mb-4 p-2 w-full border rounded"
-          />
-          <button 
-            type="submit" 
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
-          >
-            Update
-          </button>
-        </form>
+      <NavbarAdmin />
+      <div className="relative flex justify-center items-center h-screen bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('path_to_your_background_image.jpg')" }}>
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        <div className="relative bg-white bg-opacity-90 p-8 md:p-12 rounded-lg shadow-md w-full max-w-md mx-4 text-center">
+          <h2 className="text-3xl font-bold mb-6 text-gray-800">Update Profile</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input 
+              type="text" 
+              placeholder="Full Name" 
+              value={fullName} 
+              onChange={(e) => setFullName(e.target.value)} 
+              required 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            />
+            <input 
+              type="email" 
+              placeholder="Email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            />
+            <input 
+              type="text" 
+              placeholder="Username" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+              required 
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            />
+            <input
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            />
+            <button 
+              type="submit" 
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Update
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
     </>
   );
 };
 
 export default UpdateProfile;
+
+
+
