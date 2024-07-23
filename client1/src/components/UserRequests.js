@@ -4,6 +4,7 @@ import NavbarAdmin from './NavbarAdmin';
 
 const UserRequests = () => {
   const [pendingUsers, setPendingUsers] = useState([]);
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     const fetchPendingUsers = async () => {
@@ -29,6 +30,8 @@ const UserRequests = () => {
         }
       });
       setPendingUsers(pendingUsers.filter(user => user.id !== userId));
+      setNotification('User approved Successfully');
+      setTimeout(() => setNotification(''), 3000);
     } catch (err) {
       console.error('Error approving user:', err);
     }
@@ -42,6 +45,8 @@ const UserRequests = () => {
         }
       });
       setPendingUsers(pendingUsers.filter(user => user.id !== userId));
+      setNotification('User rejected Successfully');
+      setTimeout(() => setNotification(''), 3000);
     } catch (err) {
       console.error('Error rejecting user:', err);
     }
@@ -51,6 +56,11 @@ const UserRequests = () => {
     <>
       <NavbarAdmin />
       <div className="flex flex-col items-center mt-8">
+        {notification && (
+          <div className="bg-green-500 text-white py-2 px-4 mb-4 rounded">
+            {notification}
+          </div>
+        )}
         <div className="overflow-x-auto w-full max-w-4xl">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
             <thead className="bg-red-800 text-white">
@@ -100,4 +110,3 @@ const UserRequests = () => {
 };
 
 export default UserRequests;
-
