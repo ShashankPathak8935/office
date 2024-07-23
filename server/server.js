@@ -1405,10 +1405,13 @@ app.get("/api/getMessages", async (req, res) => {
 // Route to fetch order history for graph
 // Example route to fetch order history grouped by month
 // Example route to fetch order history grouped by month
+// Updated backend code
 app.get("/api/order-history", async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query(`
+
+    // Fetch monthly order data
+    const monthlyResult = await client.query(`
       SELECT 
         to_char(created_at, 'Month') AS month,
         COUNT(*) AS total_orders
@@ -1419,13 +1422,51 @@ app.get("/api/order-history", async (req, res) => {
       ORDER BY 
         MIN(EXTRACT(MONTH FROM created_at));
     `);
+
+    // Fetch today's order data
+    const todayResult = await client.query(`
+      SELECT 
+        COUNT(*) AS total_orders_today
+      FROM 
+        shashank_pathak.order_history
+      WHERE 
+        created_at::date = CURRENT_DATE;
+    `);
+
+    // Fetch weekly order data (past 7 days)
+    const weeklyResult = await client.query(`
+      SELECT 
+        COUNT(*) AS total_orders_week
+      FROM 
+        shashank_pathak.order_history
+      WHERE 
+        created_at >= CURRENT_DATE - INTERVAL '7 days';
+    `);
+
+    // Fetch monthly order data (past 30 days)
+    const monthResult = await client.query(`
+      SELECT 
+        COUNT(*) AS total_orders_month
+      FROM 
+        shashank_pathak.order_history
+      WHERE 
+        created_at >= CURRENT_DATE - INTERVAL '30 days';
+    `);
+
     client.release();
-    res.json(result.rows);
+
+    res.json({
+      monthlyOrders: monthlyResult.rows,
+      todayOrders: todayResult.rows[0].total_orders_today,
+      weeklyOrders: weeklyResult.rows[0].total_orders_week,
+      monthOrders: monthResult.rows[0].total_orders_month
+    });
   } catch (err) {
     console.error("Error fetching order history:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 app.get("/", (req, res) => {
   console.log("Home page");
