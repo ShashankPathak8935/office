@@ -715,55 +715,42 @@ const readFileAsync = promisify(fs.readFile);
 
 
 // Endpoint to place an order and update order history
-app.post("/place-order/:userId", async (req, res) => {
+app.post('/place-order/:userId', async (req, res) => {
   const userId = req.params.userId;
   const uniqueOrderId = generateRandomOrderId(); // Generate a random order ID for the entire order
 
   try {
     // Begin transaction
-    await pool.query("BEGIN");
+    await pool.query('BEGIN');
 
     // Get all cart items for the user with product details
-    const cartItemsResult = await pool.query(
-      `
+    const cartItemsResult = await pool.query(`
       SELECT cart.id, cart.product_id, cart.quantity, products.name as product_name, products.price
       FROM shashank_pathak.cart cart
       JOIN shashank_pathak.products products ON cart.product_id = products.id
       WHERE cart.user_id = $1
-    `,
-      [userId]
-    );
+    `, [userId]);
     const cartItems = cartItemsResult.rows;
 
     // Insert cart items into order_history with the same unique order ID
     for (let item of cartItems) {
       await pool.query(
-        "INSERT INTO shashank_pathak.order_history (order_id, user_id, quantity, status, created_at, product_id) VALUES ($1, $2, $3, $4, $5, $6)",
-        [
-          uniqueOrderId,
-          userId,
-          item.quantity,
-          "pending",
-          new Date(),
-          item.product_id,
-        ]
+        'INSERT INTO shashank_pathak.order_history (order_id, user_id, quantity, status, created_at, product_id) VALUES ($1, $2, $3, $4, $5, $6)',
+        [uniqueOrderId, userId, item.quantity, 'pending', new Date(), item.product_id]
       );
     }
 
     // Update delivered column to false for the user's cart items
-    await pool.query(
-      "UPDATE shashank_pathak.cart SET delivered = false WHERE user_id = $1",
-      [userId]
-    );
+    await pool.query('UPDATE shashank_pathak.cart SET delivered = false WHERE user_id = $1', [userId]);
+
+     // Delete cart items after placing the order
+     await pool.query('DELETE FROM shashank_pathak.cart WHERE user_id = $1', [userId]);
 
     // Commit transaction
-    await pool.query("COMMIT");
+    await pool.query('COMMIT');
 
     // Get user email and full name
-    const userResult = await pool.query(
-      "SELECT email, full_name FROM shashank_pathak.users WHERE id = $1",
-      [userId]
-    );
+    const userResult = await pool.query('SELECT email, full_name FROM shashank_pathak.users WHERE id = $1', [userId]);
     const user = userResult.rows[0];
 
     // Create HTML table for order details
@@ -777,36 +764,37 @@ app.post("/place-order/:userId", async (req, res) => {
           </tr>
         </thead>
         <tbody>
-          ${cartItems
-            .map(
-              (item) => `
+          ${cartItems.map(item => `
             <tr>
               <td>${item.product_name}</td>
               <td>${item.quantity}</td>
               <td>${item.price}</td>
             </tr>
-          `
-            )
-            .join("")}
+          `).join('')}
         </tbody>
-      </table>`;
+      </table>`
+    ;
+
     // Read HTML template
-    let htmlTemplate = await readFileAsync("./order.html", "utf-8");
+    let htmlTemplate = await readFileAsync('./order.html', 'utf-8');
 
     // Replace placeholders in HTML template
-    htmlTemplate = htmlTemplate
-      .replace("[Recipient]", user.full_name)
-      .replace("[OrderID]", uniqueOrderId)
-      .replace("[OrderDetailsTable]", orderDetailsTable);
+    htmlTemplate = htmlTemplate.replace('[Recipient]', user.full_name)
+                               .replace('[OrderID]', uniqueOrderId)
+                               .replace('[OrderDetailsTable]', orderDetailsTable);
 
     // Send email to the user
-    sendEmail(user.email, "Order Placed Successfully", htmlTemplate);
+      sendEmail(
+      user.email,
+      'Order Placed Successfully',
+      htmlTemplate
+    );
 
     // Send email to the admin
-    const adminEmail = "shashankrajpathak123@gmail.com"; // Replace with the admin's email address
-    sendEmail(
+    const adminEmail = 'sardarkhan2428@gmail.com'; // Replace with the admin's email address
+      sendEmail(
       adminEmail,
-      "New Order Placed",
+      'New Order Placed',
       `
       <p>Hello Admin,</p>
       <p>A new order has been placed with the following details:</p>
@@ -817,14 +805,12 @@ app.post("/place-order/:userId", async (req, res) => {
       `
     );
 
-    res
-      .status(200)
-      .json({ message: "Order placed successfully", orderId: uniqueOrderId });
+    res.status(200).json({ message: 'Order placed successfully', orderId: uniqueOrderId });
   } catch (err) {
     // Rollback transaction in case of error
-    await pool.query("ROLLBACK");
-    console.error("Error placing order:", err);
-    res.status(500).json({ error: "Internal server error" });
+    await pool.query('ROLLBACK');
+    console.error('Error placing order:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -907,19 +893,20 @@ app.delete('/orders/:userId/:orderId', async (req, res) => {
     // Begin transaction
     await pool.query('BEGIN');
 
-    // Fetch the specific order to be cancelled
+    // Fetch all products in the specific order to be cancelled
     const orderResult = await pool.query('SELECT product_id, quantity FROM shashank_pathak.order_history WHERE user_id = $1 AND order_id = $2 AND status = $3', 
       [userId, orderId, 'pending']);
-    const orderToCancel = orderResult.rows[0];
+    const orderToCancel = orderResult.rows;
 
-    if (!orderToCancel) {
+    if (orderToCancel.length === 0) {
       await pool.query('ROLLBACK'); // Rollback if no pending order found
       return res.status(404).json({ success: false, message: 'No pending order found for the user' });
     }
 
-    // Get product details for the order to be cancelled
-    const productDetailsResult = await pool.query('SELECT id, name, price FROM shashank_pathak.products WHERE id = $1', [orderToCancel.product_id]);
-    const productDetails = productDetailsResult.rows[0];
+    // Fetch product details for all products in the order
+    const productIds = orderToCancel.map(order => order.product_id);
+    const productDetailsResult = await pool.query('SELECT id, name, price FROM shashank_pathak.products WHERE id = ANY($1)', [productIds]);
+    const productDetails = productDetailsResult.rows;
 
     // Create HTML table for order details
     const orderDetailsTable = `
@@ -933,18 +920,23 @@ app.delete('/orders/:userId/:orderId', async (req, res) => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>${orderId}</td>
-            <td>${productDetails.name}</td>
-            <td>${orderToCancel.quantity}</td>
-            <td>${productDetails.price}</td>
-          </tr>
+          ${orderToCancel.map(order => {
+            const product = productDetails.find(p => p.id === order.product_id);
+            return `
+              <tr>
+                <td>${orderId}</td>
+                <td>${product.name}</td>
+                <td>${order.quantity}</td>
+                <td>${product.price}</td>
+              </tr>
+            `;
+          }).join('')}
         </tbody>
       </table>
     `;
 
     // Delete order from shashank_pathak.cart for the user
-    await pool.query('DELETE FROM shashank_pathak.cart WHERE user_id = $1 AND product_id = $2', [userId, orderToCancel.product_id]);
+    await pool.query('DELETE FROM shashank_pathak.cart WHERE user_id = $1 AND product_id = ANY($2)', [userId, productIds]);
 
     // Update order history to mark order as user cancelled
     await pool.query('UPDATE shashank_pathak.order_history SET status = $1 WHERE user_id = $2 AND order_id = $3 AND status = $4',
@@ -974,6 +966,7 @@ app.delete('/orders/:userId/:orderId', async (req, res) => {
     res.status(500).json({ success: false, error: 'Error deleting order' });
   }
 });
+
 
 
 
