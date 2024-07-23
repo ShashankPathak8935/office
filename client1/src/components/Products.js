@@ -101,7 +101,7 @@ const Products = () => {
         <img src={headerImage} alt="Header" className="w-full h-full object-cover" />
       </div>
       <div className="flex flex-col items-center bg-gray-100 py-8 min-h-screen">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
           {filteredProducts.map(product => (
             <div key={product.id} className="bg-white rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out">
               <div className="relative">
@@ -115,10 +115,19 @@ const Products = () => {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">{product.name}</h3>
+                  {product.discount > 0 && (
+                    <span className="text-red-500 font-bold text-lg">
+                      Discount: {product.discount}%
+                    </span>
+                  )}
+                </div>
                 <p className="text-gray-600 mb-4">{product.description}</p>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-gray-900 font-bold text-xl">${product.price}</span>
+                  <div>
+                    <span className="text-gray-900 font-bold text-xl">${product.price}</span>
+                  </div>
                   {isLoadingRatings ? (
                     <p>Loading...</p>
                   ) : (
@@ -149,4 +158,3 @@ const Products = () => {
 };
 
 export default Products;
-

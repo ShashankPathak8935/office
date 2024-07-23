@@ -17,7 +17,7 @@ const Home = () => {
     {/* <Navbar setFilteredProducts={setFilteredProducts} cartCount={cartCount} setCartCount={setCartCount} /> */}
    {/* <Body/> */}
     <Products/>
-    <HomeBody/>
+    {/* <HomeBody/> */}
     </div>
     <Footer/>
     </div>

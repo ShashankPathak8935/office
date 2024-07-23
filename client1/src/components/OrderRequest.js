@@ -4,6 +4,8 @@ import NavbarAdmin from './NavbarAdmin';
 
 const OrderRequest = () => {
   const [orders, setOrders] = useState([]);
+  const [notification, setNotification] = useState(""); // State for notification message
+  const [isError, setIsError] = useState(false); // State to track error
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -29,11 +31,19 @@ const OrderRequest = () => {
         }
       });
       if (response.data.success) {
-        setOrders(orders.filter(order => order.user_id !== userId));
+        setNotification("Order is accepted");
+        setIsError(false); // No error
+        window.location.reload(); // Refresh the page
       }
     } catch (err) {
       console.error('Error accepting orders:', err);
+      setNotification("Error accepting order. Please try again.");
+      setIsError(true); // Set error state
     }
+    setTimeout(() => {
+      setNotification("");
+      setIsError(false); // Reset error state
+    }, 3000); // Clear notification after 3 seconds
   };
 
   const handleCancelUserOrders = async (userId) => {
@@ -44,11 +54,19 @@ const OrderRequest = () => {
         }
       });
       if (response.data.success) {
-        setOrders(orders.filter(order => order.user_id !== userId));
+        setNotification("Order is cancelled");
+        setIsError(false); // No error
+        window.location.reload(); // Refresh the page
       }
     } catch (err) {
       console.error('Error canceling orders:', err);
+      setNotification("Error cancelling order. Please try again.");
+      setIsError(true); // Set error state
     }
+    setTimeout(() => {
+      setNotification("");
+      setIsError(false); // Reset error state
+    }, 3000); // Clear notification after 3 seconds
   };
 
   const groupedOrders = orders.reduce((acc, order) => {
@@ -62,6 +80,11 @@ const OrderRequest = () => {
   return (
     <>
       <NavbarAdmin />
+      {notification && (
+        <div className={`fixed top-0 left-0 w-full text-center py-2 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white`}>
+          {notification}
+        </div>
+      )}
       <div className="container mx-auto mt-8 bg-blue-400 p-6 rounded-lg">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Order Requests</h2>
         {Object.keys(groupedOrders).length > 0 ? (
@@ -96,13 +119,19 @@ const OrderRequest = () => {
               </table>
               <div className="flex justify-end p-4 bg-gray-100">
                 <button
-                  onClick={() => handleAcceptUserOrders(userId)}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent any default behavior
+                    handleAcceptUserOrders(userId);
+                  }}
                   className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded mr-2 transition duration-200"
                 >
                   Accept Orders
                 </button>
                 <button
-                  onClick={() => handleCancelUserOrders(userId)}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent any default behavior
+                    handleCancelUserOrders(userId);
+                  }}
                   className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded transition duration-200"
                 >
                   Cancel Orders

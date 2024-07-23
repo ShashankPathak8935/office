@@ -30,18 +30,26 @@ const ProductProcessing = () => {
     }
   }, [userId]);
 
+
+
   const deleteAllOrders = async () => {
+    console.log("Deleting orders for user:", userId); // Add this line to check userId
     try {
-      await axios.delete(`http://localhost:5000/orders/${userId}`);
+      const response = await axios.delete(`http://localhost:5000/orders/${userId}`);
+      console.log("Delete response:", response.data); // Add this line to check response
       setPendingOrders([]);
-      setNotification("Your order is cancelled successfully"); // Set notification message
+      setNotification("Your order is cancelled successfully");
       setTimeout(() => {
-        setNotification(""); // Clear notification after 3 seconds
+        setNotification("");
       }, 3000);
     } catch (error) {
       console.error("Error deleting orders:", error);
     }
   };
+
+
+
+  
 
   return (
     <>
@@ -97,6 +105,7 @@ const ProductProcessing = () => {
             </div>
           ) : (
             <p className="text-gray-700 text-center mt-6">
+              your All orders has been succesfully delivered <br />
               Add New items in your Cart.
             </p>
           )}

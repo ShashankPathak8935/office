@@ -67,7 +67,8 @@ const Cart = () => {
 
   const calculateFoodCost = (items) => {
     const total = items.reduce(
-      (acc, item) => acc + item.price * item.quantity,
+      (acc, item) =>
+        acc + item.price * item.quantity * ((100 - item.discount) / 100),
       0
     );
     setTotalCost(total);
@@ -84,21 +85,12 @@ const Cart = () => {
     setTotalPayableAmount(totalPayable);
   };
 
-  const placeOrder = async () => {
-    try {
-      await axios.post(`http://localhost:5000/place-order/${userId}`);
-      console.log("Order placed successfully");
-      setNotification("Order placed successfully!"); // Set notification message
-      setTimeout(() => {
-        setNotification(""); // Clear notification after 3 seconds
-        navigate("/product-processing"); // Navigate to the product processing page
-      }, 3000);
-    } catch (error) {
-      console.error("Error placing order:", error);
-      setNotification("Error placing order. Please try again."); // Set error notification message
-      setTimeout(() => setNotification(""), 3000); // Clear notification after 3 seconds
-    }
+  const placeOrder = () => {
+    navigate("/final-payment", {
+      state: { totalPayableAmount, userId },
+    });
   };
+  
 
   const redirectToPurchaseHistory = () => {
     navigate("/purchase-history");
@@ -152,6 +144,7 @@ const Cart = () => {
                     <th className="py-2 px-4">Product</th>
                     <th className="py-2 px-4">Name</th>
                     <th className="py-2 px-4">Price</th>
+                    <th className="py-2 px-4">Discount</th> {/* Add discount column */}
                     <th className="py-2 px-4">Quantity</th>
                     <th className="py-2 px-4">Total</th>
                     <th className="py-2 px-4">Actions</th>
@@ -171,6 +164,7 @@ const Cart = () => {
                       <td className="py-2 px-4">
                         ${Number(item.price).toFixed(2)}
                       </td>
+                      <td className="py-2 px-4">{item.discount}%</td> {/* Display discount */}
                       <td className="py-2 px-4 flex items-center justify-center space-x-2">
                         <button
                           className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400 transition-colors"
@@ -209,77 +203,76 @@ const Cart = () => {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              d="M12 4v16m8-8H4"
                             />
                           </svg>
                         </button>
                       </td>
                       <td className="py-2 px-4">
-                        ${(Number(item.price) * item.quantity).toFixed(2)}
+                        ${((item.price * (1 - item.discount / 100)) * item.quantity).toFixed(2)}
                       </td>
                       <td className="py-2 px-4">
                         <button
                           onClick={() => removeCartItem(item.id)}
-                          className="text-white-500 hover:text-white-600  py-2 rounded bg-red-500"
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
                         >
-                          Remove item
+                          Remove
                         </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <div className="p-4 flex justify-end bg-gray-50 border-t">
-                <div className="flex items-center">
-                  <span className="font-semibold mr-2">Select State:</span>
-                  <select
-                    value={selectedState}
-                    onChange={(e) => setSelectedState(e.target.value)}
-                    className="border border-gray-300 rounded px-2 py-1"
-                  >
-                    <option value="Uttar Pradesh">Uttar Pradesh</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end p-4">
-                <div className="bg-white shadow-md p-4 rounded-lg w-64">
-                  <h3 className="text-xl font-bold mb-4">Order Summary</h3>
-                  <p className="flex justify-between mb-2">
-                    <span>Food Cost:</span>
-                    <span>${totalCost.toFixed(2)}</span>
-                  </p>
-                  <p className="flex justify-between mb-2">
-                    <span>GST:</span>
-                    <span>${calculateGST()}</span>
-                  </p>
-                  <p className="flex justify-between font-bold">
-                    <span>Total Payable:</span>
-                    <span>${totalPayableAmount.toFixed(2)}</span>
-                  </p>
-                  <button
-                    onClick={placeOrder}
-                    className="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-600 transition-colors w-full"
-                  >
-                    Place Order
-                  </button>
-                  {notification && (
-                    <p className="mt-4 text-center text-white bg-green-500 rounded py-2">
-                      {notification}
-                    </p>
-                  )}
-                </div>
-              </div>
             </div>
           ) : (
-            <p className="text-center">Your cart is empty.</p>
+            <p className="text-center text-gray-700 text-xl mt-8">
+              Your cart is empty.
+            </p>
           )}
         </div>
-        <Footer />
+        <div className="container mx-auto mt-8 px-4 bg-gray-200 rounded-lg shadow-md py-4">
+          <div className="text-right">
+            <label className="mr-4 text-lg font-semibold text-gray-800">
+              Select State:
+            </label>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="px-4 py-2 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
+            >
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div className="mt-4 text-right">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Total Food Cost: ${totalCost.toFixed(2)}
+            </h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              GST: ${calculateGST()}
+            </h2>
+            <h2 className="text-2xl font-bold text-gray-800">
+              Total Payable Amount: ${totalPayableAmount.toFixed(2)}
+            </h2>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={placeOrder}
+              className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 transition-colors"
+            >
+              Place Order
+            </button>
+          </div>
+        </div>
+        {notification && ( // Conditionally render the notification message
+          <div className="fixed bottom-0 left-0 right-0 bg-green-500 text-white text-center py-2">
+            {notification}
+          </div>
+        )}
       </div>
+      <Footer />
     </>
   );
 };
 
 export default Cart;
-

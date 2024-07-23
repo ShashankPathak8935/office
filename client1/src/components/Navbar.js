@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaShoppingCart } from 'react-icons/fa';
 import axios from 'axios';
 import reactLogo from '../images/navbar1.png';
@@ -10,7 +10,6 @@ const Navbar = ({ setFilteredProducts }) => {
   const [products, setProducts] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showCategories, setShowCategories] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const username = localStorage.getItem('username');
   const userImage = localStorage.getItem('userImage');
@@ -69,14 +68,11 @@ const Navbar = ({ setFilteredProducts }) => {
     window.location.href = '/login';
   };
 
-  
-
   const handleCategoryClick = async (category) => {
     try {
       const response = await axios.get(`http://localhost:5000/products/category/${category}`);
       setFilteredProducts(response.data);
       setSearchInput(category); // Autofill search input with selected category
-      setShowCategories(false); // Close categories dropdown
       setShowDropdown(false); // Close dropdown menu
     } catch (error) {
       console.error('Error fetching products by category:', error);
@@ -120,10 +116,12 @@ const Navbar = ({ setFilteredProducts }) => {
       if (searchValue === 'all products') {
         handleAllProductsClick();
       } else if (filteredItems.length > 0) {
-        if (searchValue === filteredItems[0].category.toLowerCase()) {
-          handleCategoryClick(filteredItems[0].category);
-        } else {
-          handleProductClick(filteredItems[0]);
+        const firstItem = filteredItems[0];
+
+        if (firstItem.category && searchValue === firstItem.category.toLowerCase()) {
+          handleCategoryClick(firstItem.category);
+        } else if (firstItem.name && searchValue === firstItem.name.toLowerCase()) {
+          handleProductClick(firstItem);
         }
       }
     }
@@ -138,12 +136,12 @@ const Navbar = ({ setFilteredProducts }) => {
     <nav className="bg-red-800 p-4">
       <div className="flex justify-between items-center">
         <div className="flex space-x-8">
-        <img
-              src={reactLogo}
-              className="h-12 w-32 cursor-pointer "
-              alt="React logo "
-              onClick={handleLogoClick}
-            />
+          <img
+            src={reactLogo}
+            className="h-12 w-32 cursor-pointer"
+            alt="React logo"
+            onClick={handleLogoClick}
+          />
           <Link to="/home" className="text-white py-2">Home</Link>
           <Link to="/about" className="text-white py-2">About</Link>
           <Link to="/contact" className="text-white py-2">Contact</Link>
@@ -156,12 +154,10 @@ const Navbar = ({ setFilteredProducts }) => {
               placeholder="Search by category"
               className="px-4 py-2 rounded"
               onFocus={() => setShowDropdown(true)}
-              onBlur={() => setShowDropdown(false)}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 100)} // Slight delay to allow click
             />
             {showDropdown && (
-              <div
-                className="absolute top-12 left-0 w-full bg-white rounded-md shadow-lg z-20"
-              >
+              <div className="absolute top-12 left-0 w-full bg-white rounded-md shadow-lg z-20">
                 <ul>
                   {filteredItems.map((item, index) => (
                     <li

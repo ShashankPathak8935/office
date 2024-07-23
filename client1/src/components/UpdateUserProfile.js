@@ -21,6 +21,7 @@ const UpdateProfile = () => {
   const [fullName, setFullName] = useState('');
   const [image, setImage] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const showNotification = (message, type) => {
@@ -30,7 +31,7 @@ const UpdateProfile = () => {
       if (type === 'green') {
         navigate('/home');
       }
-    }, 1000); // Adjust the delay as needed
+    }, 3000); // Adjust the delay as needed
   };
 
   useEffect(() => {
@@ -54,8 +55,23 @@ const UpdateProfile = () => {
     fetchUserDetails();
   }, []);
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!fullName.trim()) newErrors.fullName = 'Full Name is required.';
+    if (!email.trim()) newErrors.email = 'Email is required.';
+    if (!username.trim()) newErrors.username = 'Username is required.';
+    // Add more validation rules as needed
+
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formErrors = validateForm();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
     const formData = new FormData();
     formData.append('username', username);
     formData.append('email', email);
@@ -97,25 +113,28 @@ const UpdateProfile = () => {
                 placeholder="Full Name" 
                 value={fullName} 
                 onChange={(e) => setFullName(e.target.value)} 
-                required 
-                className="mb-4 p-2 w-full border rounded"
+                className={`mb-4 p-2 w-full border rounded ${errors.fullName ? 'border-red-500' : ''}`}
               />
+              {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName}</p>}
+
               <input 
                 type="email" 
                 placeholder="Email" 
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
-                required 
-                className="mb-4 p-2 w-full border rounded"
+                className={`mb-4 p-2 w-full border rounded ${errors.email ? 'border-red-500' : ''}`}
               />
+              {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
               <input 
                 type="text" 
                 placeholder="Username" 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
-                required 
-                className="mb-4 p-2 w-full border rounded"
+                className={`mb-4 p-2 w-full border rounded ${errors.username ? 'border-red-500' : ''}`}
               />
+              {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+
               <input
                 type="file"
                 onChange={(e) => setImage(e.target.files[0])}

@@ -12,6 +12,21 @@ const ContactForm = () => {
     food: '',
     message: ''
   });
+  const [errors, setErrors] = useState({});
+  const [notification, setNotification] = useState('');
+
+  const validate = () => {
+    const errors = {};
+    if (!formData.name) errors.name = 'Name is required.';
+    if (!formData.email) {
+      errors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Email address is invalid.';
+    }
+    if (!formData.food) errors.food = 'Favorite food is required.';
+    if (!formData.message) errors.message = 'Message is required.';
+    return errors;
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -22,6 +37,12 @@ const ContactForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
     try {
       const response = await fetch('http://localhost:5000/api/contact', {
         method: 'POST',
@@ -31,14 +52,15 @@ const ContactForm = () => {
         body: JSON.stringify(formData)
       });
       if (response.ok) {
-        alert('Form submitted successfully!');
+        setNotification('Thank you for contacting us!');
         setFormData({ name: '', email: '', food: '', message: '' });
+        setTimeout(() => setNotification(''), 5000); // Clear the notification after 5 seconds
       } else {
-        alert('Failed to submit form.');
+        setNotification('Failed to submit form.');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error submitting form.');
+      setNotification('Error submitting form.');
     }
   };
 
@@ -46,6 +68,11 @@ const ContactForm = () => {
     <>
       <Navbar />
       <div className="flex flex-col min-h-screen">
+        {notification && (
+          <div className="fixed top-0 left-0 w-full bg-green-500 text-white text-center p-2">
+            {notification}
+          </div>
+        )}
         <div className="relative h-screen md:h-[75vh] flex-grow">
           <img src={headerImage} alt="Header" className="absolute w-full h-full object-cover" />
         </div>
@@ -77,7 +104,7 @@ const ContactForm = () => {
               <p className="mb-4">Saturday and Sunday: Closed</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="w-full lg:w-1/2 p-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg rounded">
+            <form onSubmit={handleSubmit} className="w-full lg:w-1/2 p-4 bg-gradient-to-r from-blue-300 to-blue-700 text-white shadow-lg rounded">
               <h2 className="text-2xl font-bold mb-4">Get in Touch</h2>
               <div className="mb-4">
                 <label className="block text-white">Name</label>
@@ -87,8 +114,8 @@ const ContactForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded bg-white text-gray-900 shadow-md"
-                  required
                 />
+                {errors.name && <p className="text-red-500">{errors.name}</p>}
               </div>
               <div className="mb-4">
                 <label className="block text-white">Email</label>
@@ -98,8 +125,8 @@ const ContactForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded bg-white text-gray-900 shadow-md"
-                  required
                 />
+                {errors.email && <p className="text-red-500">{errors.email}</p>}
               </div>
               <div className="mb-4">
                 <label className="block text-white">Favorite Food</label>
@@ -109,8 +136,8 @@ const ContactForm = () => {
                   value={formData.food}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded bg-white text-gray-900 shadow-md"
-                  required
                 />
+                {errors.food && <p className="text-red-500">{errors.food}</p>}
               </div>
               <div className="mb-4">
                 <label className="block text-white">Message</label>
@@ -119,8 +146,8 @@ const ContactForm = () => {
                   value={formData.message}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded bg-white text-gray-900 shadow-md"
-                  required
                 ></textarea>
+                {errors.message && <p className="text-red-500">{errors.message}</p>}
               </div>
               <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded shadow-md hover:bg-green-600 transition-colors w-full">
                 Submit

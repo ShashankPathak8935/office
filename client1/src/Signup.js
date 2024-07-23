@@ -7,22 +7,66 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState('user'); // Added state for role
+  const [role, setRole] = useState('user');
   const [showPassword, setShowPassword] = useState(false);
   const [image, setImage] = useState(null);
-  const [notification, setNotification] = useState(null); // State for notification
-  const [notificationType, setNotificationType] = useState(''); // State for notification type
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [notification, setNotification] = useState(null);
+  const [notificationType, setNotificationType] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!fullName) {
+      setNotification('Full name is required.');
+      setNotificationType('error');
+      return false;
+    }
+
+    if (!email) {
+      setNotification('Email is required.');
+      setNotificationType('error');
+      return false;
+    }
+
+    if (!emailRegex.test(email)) {
+      setNotification('Invalid email format.');
+      setNotificationType('error');
+      return false;
+    }
+
+    if (!username) {
+      setNotification('Username is required.');
+      setNotificationType('error');
+      return false;
+    }
+
+    if (!password) {
+      setNotification('Password is required.');
+      setNotificationType('error');
+      return false;
+    }
+
+    if (password.length < 8) {
+      setNotification('Password must be at least 8 characters long.');
+      setNotificationType('error');
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
     formData.append('email', email);
     formData.append('fullName', fullName);
-    formData.append('role', role); // Added role to formData
+    formData.append('role', role);
     if (image) formData.append('image', image);
 
     try {
@@ -30,11 +74,11 @@ const Signup = () => {
       console.log(response.data);
       setNotification('Signup successful! Please check your email for further instructions.');
       setNotificationType('success');
-      setIsModalOpen(true); // Open the modal on successful signup
+      setIsModalOpen(true);
       setTimeout(() => {
         setIsModalOpen(false);
         navigate('/login');
-      }, 3000); // Close the modal and navigate to login after 3 seconds
+      }, 3000);
     } catch (error) {
       console.error('Error:', error.response ? error.response.data.message : error.message);
       setNotification('Signup failed. Please try again.');
@@ -61,7 +105,6 @@ const Signup = () => {
             placeholder="Full Name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            required
             className="mb-4 p-2 w-full border rounded"
           />
           <input
@@ -69,7 +112,6 @@ const Signup = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
             className="mb-4 p-2 w-full border rounded"
           />
           <input
@@ -77,7 +119,6 @@ const Signup = () => {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
             className="mb-4 p-2 w-full border rounded"
           />
           <div className="relative">
@@ -86,7 +127,6 @@ const Signup = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               className="mb-4 p-2 w-full border rounded pr-12"
             />
             <span
@@ -117,7 +157,6 @@ const Signup = () => {
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            required
             className="mb-4 p-2 w-full border rounded"
           >
             <option value="user">User</option>
@@ -148,7 +187,7 @@ const Signup = () => {
               onClick={() => setIsModalOpen(false)}
               className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
             >
-              Close
+              OK
             </button>
           </div>
         </div>
@@ -158,4 +197,3 @@ const Signup = () => {
 };
 
 export default Signup;
-

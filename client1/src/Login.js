@@ -21,6 +21,7 @@ const LoginForm = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [notification, setNotification] = useState({ message: '', type: '' });
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const showNotification = (message, type) => {
@@ -30,8 +31,34 @@ const LoginForm = () => {
     }, 3000);
   };
 
+  const validateLogin = () => {
+    const newErrors = {};
+    if (!username.trim()) newErrors.username = 'Username is required';
+    if (!password) newErrors.password = 'Password is required';
+    return newErrors;
+  };
+
+  const validateForgotPassword = () => {
+    const newErrors = {};
+    if (!email.trim()) newErrors.email = 'Email is required';
+    if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) newErrors.email = 'Invalid email address';
+    return newErrors;
+  };
+
+  const validateOtp = () => {
+    const newErrors = {};
+    if (!otp.trim()) newErrors.otp = 'OTP is required';
+    return newErrors;
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    const formErrors = validateLogin();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/login', { username, password });
       localStorage.setItem('userId', response.data.id);
@@ -54,6 +81,12 @@ const LoginForm = () => {
 
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
+    const formErrors = validateForgotPassword();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/forgot-password', { email });
       setIsOtpSent(true);
@@ -66,10 +99,18 @@ const LoginForm = () => {
 
   const handleVerifyOtpSubmit = async (e) => {
     e.preventDefault();
+    const formErrors = validateOtp();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      showNotification(response.data.message, 'green');
-      navigate('/reset-password');
+      showNotification('OTP verified successfully', 'green');
+      setTimeout(() => {
+        navigate('/reset-password');
+      }, 3000);
     } catch (error) {
       console.error(error.response.data.message);
       showNotification(error.response.data.message, 'red');
@@ -89,17 +130,17 @@ const LoginForm = () => {
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                required
-                className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.username ? 'border-red-500' : ''}`}
               />
+              {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : ''}`}
               />
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
               <button
                 type="submit"
                 className="w-full bg-blue-500 text-white py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
@@ -127,23 +168,27 @@ const LoginForm = () => {
             <h2 className="text-3xl font-bold mb-6">{isOtpSent ? 'Verify OTP' : 'Forgot Password'}</h2>
             <form onSubmit={isOtpSent ? handleVerifyOtpSubmit : handleForgotPasswordSubmit}>
               {isOtpSent ? (
-                <input
-                  type="text"
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  required
-                  className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <>
+                  <input
+                    type="text"
+                    placeholder="Enter OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className={`mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.otp ? 'border-red-500' : ''}`}
+                  />
+                  {errors.otp && <p className="text-red-500 text-xs mt-1">{errors.otp}</p>}
+                </>
               ) : (
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`mb-4 p-3 w-full border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
+                  />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                </>
               )}
               <button
                 type="submit"
@@ -170,5 +215,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-
-
