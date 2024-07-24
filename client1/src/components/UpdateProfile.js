@@ -19,6 +19,7 @@ const UpdateProfile = () => {
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [image, setImage] = useState(null);
+  const [currentImagePath, setCurrentImagePath] = useState('');
   const [notification, setNotification] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const UpdateProfile = () => {
         setUsername(response.data.username);
         setEmail(response.data.email);
         setFullName(response.data.full_name);
-        setImage(response.data.image);
+        setCurrentImagePath(response.data.image);
       } catch (error) {
         console.error(error.response.data.message);
       }
@@ -129,6 +130,14 @@ const UpdateProfile = () => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
               />
               {errors.username && <p className="text-red-500 text-sm absolute right-0 top-full">{errors.username}</p>}
+            </div>
+            <div className="relative">
+              <input 
+                type="text" 
+                value={currentImagePath} 
+                readOnly
+                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-200 text-gray-500 focus:outline-none cursor-not-allowed"
+              />
             </div>
             <input
               type="file"

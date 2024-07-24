@@ -20,6 +20,7 @@ const UpdateProfile = () => {
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [image, setImage] = useState(null);
+  const [currentImagePath, setCurrentImagePath] = useState('');
   const [notification, setNotification] = useState({ message: '', type: '' });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const UpdateProfile = () => {
         setUsername(response.data.username);
         setEmail(response.data.email);
         setFullName(response.data.full_name);
-        setImage(response.data.image);
+        setCurrentImagePath(response.data.image); // Set current image path
       } catch (error) {
         console.error(error.response.data.message);
       }
@@ -135,6 +136,7 @@ const UpdateProfile = () => {
               />
               {errors.username && <p className="text-red-500 text-sm">{errors.username}</p>}
 
+              <p className="mb-4 text-gray-600">Current Image Path: {currentImagePath}</p>
               <input
                 type="file"
                 onChange={(e) => setImage(e.target.files[0])}
